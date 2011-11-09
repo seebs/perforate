@@ -1,0 +1,26 @@
+Identifier = "PerfORate"
+
+Version = "VERSION"
+
+Email = "seebs@seebs.net"
+
+Dependencies = { LibGetOpt = { "required", "before" } }
+Embed = { LibGetOpt = true }
+
+Name = {
+  English = "PerfORate",
+  French = "PerfORate",
+  German = "PerfORate",
+}
+NameShort = "PerfORate"
+
+Description = {
+  English = "Perf-O-Rate is a performance-rating tool."
+}
+
+RunOnStartup = {
+  "PerfORate.lua"
+}
+
+Environment = "1.5"
+
