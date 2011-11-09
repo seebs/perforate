@@ -18,6 +18,10 @@ The exact boundaries of the intended API are a bit fuzzy, but:
 		other calls, the "already exists" message is NOT displayed
 		unless verbose is true, because that would be annoying
 		for the internal implicit calls to perf.new.
+	perf.elapsed(timer)
+		Yields current elapsed time or nil.
+	perf.lap(timer)
+		Yields current elapsed time or nil, and increments count.
 	perf.delete(timer)
 		Deletes the specified timer.  If you do this while
 		benchmarking using that timer, you will be sad.

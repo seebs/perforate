@@ -13,6 +13,7 @@
  -b expr: benchmark expr
  -d timer: delete timer expr
  -B count: benchmark count
+ -l timer: lap timer
  -n timer: create new timer (implicitly started)
  -s timer: start/stop timer
  -r timer: reset timer (implicitly stopped)
@@ -31,7 +32,9 @@ end
 function perf.start(timer, verbose)
   if perf.timers[timer] then
     if perf.timers[timer].state == 'started' then
-      perf.printf("Timer '%s' requested start when already started, ignoring.", timer)
+      if verbose then
+        perf.printf("Timer '%s' requested start when already started, ignoring.", timer)
+      end
     else
       perf.timers[timer].stamp = Inspect.Time.Real()
       perf.timers[timer].state = 'started'
@@ -140,15 +143,48 @@ function perf.delete(timer, verbose)
   end
 end
 
-function perf.showstate(timer)
+function perf.elapsed(timer, verbose)
   if perf.timers[timer] then
     local elapsed = perf.timers[timer].elapsed
     if perf.timers[timer].state == 'started' then
       elapsed = elapsed + (Inspect.Time.Real() - perf.timers[timer].stamp)
     end
+    return elapsed
+  else
+    if verbose then
+      perf.printf("No timer '%s' to check elapsed time of.", timer)
+    end
+    return nil
+  end
+end
+
+function perf.lap(timer, verbose)
+  if perf.timers[timer] then
+    local elapsed = perf.timers[timer].elapsed
+    if perf.timers[timer].state == 'started' then
+      local now = Inspect.Time.Real()
+      elapsed = elapsed + (now - perf.timers[timer].stamp)
+      perf.timers[timer].stamp = now
+      perf.timers[timer].elapsed = elapsed
+      perf.timers[timer].count = perf.timers[timer].count + 1
+    else
+      perf.start(timer)
+    end
+    return elapsed
+  else
+    if verbose then
+      perf.printf("No timer '%s' to check elapsed time of.", timer)
+    end
+    return nil
+  end
+end
+
+function perf.showstate(timer)
+  if perf.timers[timer] then
+    local elapsed = perf.elapsed(timer)
     local prettytime = perf.prettytime(elapsed)
     local prettyavg = perf.prettytime(elapsed / perf.timers[timer].count)
-    perf.printf("%s*%d: %s (average %s) [%s]", timer, perf.timers[timer].count, prettytime, prettyavg, perf.timers[timer].state)
+    perf.printf("%s x %d: %s (average %s) [%s]", timer, perf.timers[timer].count, prettytime, prettyavg, perf.timers[timer].state)
   else
     perf.printf("No timer '%s'.", timer)
   end
@@ -228,6 +264,17 @@ function perf.slashcommand(args)
     perf.delete(timer, true)
     didsomething = true
   end
+  if args['l'] then
+    local timer = args['l']
+    local elapsed = perf.lap(timer, true)
+    if elapsed then
+      local prettytime = perf.prettytime(elapsed)
+      perf.printf("%s x %d: %s", timer, perf.timers[timer].count, prettytime)
+    else
+      perf.prinf("Didn't get elapsed time for timer '%s'.", timer)
+    end
+    didsomething = true
+  end
   if args['n'] then
     local timer = args['n']
     perf.new(timer, true, true)
@@ -257,7 +304,7 @@ function perf.slashcommand(args)
     end
   else
     if not didsomething then
-      perf.printf('Usage: /perf [-a] [-B count] [-b "expr"] [-[dnrs] timer] [timer ...]')
+      perf.printf('Usage: /perf [-a] [-B count] [-b "expr"] [-[dlnrs] timer] [timer ...]')
       perf.printf('Default count is 100.')
     end
   end
@@ -274,6 +321,6 @@ end
 
 -- perf.benchmark(perf.wastetime, 300)
 
-table.insert(Event.System.Update.Begin, { perf.update, "PerfORate", "update hook" })
+table.insert(Event.System.Update.Begin, { perf.update, "LibPerfORate", "update hook" })
 
-Library.LibGetOpt.makeslash("ab:B#d:n:r:s:", "PerfORate", "perf", perf.slashcommand)
+Library.LibGetOpt.makeslash("ab:B#d:l:n:r:s:", "LibPerfORate", "perf", perf.slashcommand)

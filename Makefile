@@ -1,5 +1,5 @@
-VERSION=0.1
-PACKAGE=PerfORate
+VERSION=0.2
+PACKAGE=LibPerfORate
 RIFT=/c/games/RIFT Game/Interface/AddOns
 
 package:

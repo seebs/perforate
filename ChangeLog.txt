@@ -1,2 +1,7 @@
+2011/11/08:
+	* Added lap timer feature
+	* Tweaks to improve clarity, etc.
+	* Exposed ".elapsed()" calculation, too
+
 2011/11/07:
 	* New toy!

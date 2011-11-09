@@ -1,4 +1,4 @@
-Identifier = "PerfORate"
+Identifier = "LibPerfORate"
 
 Version = "VERSION"
 
@@ -8,18 +8,18 @@ Dependencies = { LibGetOpt = { "required", "before" } }
 Embed = { LibGetOpt = true }
 
 Name = {
-  English = "PerfORate",
-  French = "PerfORate",
-  German = "PerfORate",
+  English = "LibPerfORate",
+  French = "LibPerfORate",
+  German = "LibPerfORate",
 }
-NameShort = "PerfORate"
+NameShort = "LibPerfORate"
 
 Description = {
   English = "Perf-O-Rate is a performance-rating tool."
 }
 
 RunOnStartup = {
-  "PerfORate.lua"
+  "LibPerfORate.lua"
 }
 
 Environment = "1.5"
